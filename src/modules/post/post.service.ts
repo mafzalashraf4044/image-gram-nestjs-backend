@@ -1,6 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  InternalServerErrorException,
+} from '@nestjs/common';
+
+import { UNABLE_TO_CREATE_POST } from '@common/errors';
 
 import PostModel from './post.model';
+import { CreatePostDTO } from './dto';
 
 @Injectable()
 export default class PostService {
@@ -18,15 +25,12 @@ export default class PostService {
     }
   }
 
-  async create(): Promise<any> {
+  async create(createPostDTO: CreatePostDTO): Promise<any> {
     try {
-      const post = await this.postModel.createEntity({
-        title: 'My post',
-        content: 'Hello world',
-      });
-      return Promise.resolve(post);
+      return this.postModel.createEntity(createPostDTO);
     } catch (error) {
-      this.logger.error('create', error);
+      this.logger.error('create', error.stack);
+      throw new InternalServerErrorException(UNABLE_TO_CREATE_POST);
     }
   }
 }

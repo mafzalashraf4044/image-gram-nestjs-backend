@@ -2,6 +2,6 @@
 
 import { IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
 
-class CreatePostDTO {}
+class CreateCommentDTO {}
 
-export default CreatePostDTO;
+export default CreateCommentDTO;

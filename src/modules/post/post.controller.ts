@@ -1,6 +1,8 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Post as HTTPPost, Body } from '@nestjs/common';
 
 import PostService from './post.service';
+import { Post } from './post.schema';
+import { CreatePostDTO } from './dto';
 
 @Controller('post')
 export default class PostController {
@@ -11,8 +13,8 @@ export default class PostController {
     return this.postService.getAll();
   }
 
-  @Post()
-  create(): Promise<any> {
-    return this.postService.create();
+  @HTTPPost()
+  create(@Body() createPostDTO: CreatePostDTO): Promise<Post> {
+    return this.postService.create(createPostDTO);
   }
 }

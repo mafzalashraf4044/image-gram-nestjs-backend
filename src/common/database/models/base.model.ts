@@ -27,7 +27,6 @@ export class BaseMongooseModel<T extends Document> {
   }
 
   async createEntity(doc: Partial<T>, projections: string[] = []): Promise<T> {
-    console.log('hello world');
     const entity = await this.model.create(doc);
     return this.model.findById(entity._id, projections);
   }
