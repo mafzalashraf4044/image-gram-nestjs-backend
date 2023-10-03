@@ -3,12 +3,9 @@ import { validateSync } from 'class-validator';
 
 import {
   EnvironmentVariablesInterface,
-  MySQLConnectionConfig,
+  MongoDBConnectionConfig,
 } from '@common/interfaces';
-import {
-  MISSING_MY_SQL_ENV_VARIABLES,
-  MISSING_KAFKA_ENV_VARIABLES,
-} from '@common/errors';
+import { MISSING_MY_SQL_ENV_VARIABLES } from '@common/errors';
 
 export const validateEnvVariables = <T extends EnvironmentVariablesInterface>(
   EnvironmentVariables: ClassConstructor<T>,
@@ -28,22 +25,23 @@ export const validateEnvVariables = <T extends EnvironmentVariablesInterface>(
   return validatedConfig;
 };
 
-export const parseMySQLConnectionConfigFromEnv = (): MySQLConnectionConfig => {
-  if (
-    !process.env['DATABASE_HOST'] ||
-    !process.env['DATABASE_PORT'] ||
-    !process.env['DATABASE_USERNAME'] ||
-    !process.env['DATABASE_PASSWORD'] ||
-    !process.env['DATABASE_NAME']
-  ) {
-    throw new Error(MISSING_MY_SQL_ENV_VARIABLES);
-  }
+export const parseMongoDBConnectionConfigFromEnv =
+  (): MongoDBConnectionConfig => {
+    if (
+      !process.env['DATABASE_HOST'] ||
+      !process.env['DATABASE_PORT'] ||
+      !process.env['DATABASE_USERNAME'] ||
+      !process.env['DATABASE_PASSWORD'] ||
+      !process.env['DATABASE_NAME']
+    ) {
+      throw new Error(MISSING_MY_SQL_ENV_VARIABLES);
+    }
 
-  return {
-    host: process.env['DATABASE_HOST'],
-    port: parseInt(process.env['DATABASE_PORT'], 10),
-    username: process.env['DATABASE_USERNAME'],
-    password: process.env['DATABASE_PASSWORD'],
-    database: process.env['DATABASE_NAME'],
+    return {
+      host: process.env['DATABASE_HOST'],
+      port: parseInt(process.env['DATABASE_PORT'], 10),
+      username: process.env['DATABASE_USERNAME'],
+      password: process.env['DATABASE_PASSWORD'],
+      database: process.env['DATABASE_NAME'],
+    };
   };
-};

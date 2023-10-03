@@ -28,8 +28,4 @@ export default class EnvironmentVariables
   @IsString()
   @IsNotEmpty()
   DATABASE_NAME: string;
-
-  @IsString()
-  @IsNotEmpty()
-  KAFKA_BROKER: string;
 }

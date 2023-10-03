@@ -5,10 +5,9 @@ export interface EnvironmentVariablesInterface {
   DATABASE_USERNAME: string;
   DATABASE_PASSWORD: string;
   DATABASE_NAME: string;
-  KAFKA_BROKER: string;
 }
 
-export interface MySQLConnectionConfig {
+export interface MongoDBConnectionConfig {
   host: string;
   port: number;
   username: string;
@@ -20,7 +19,5 @@ export interface Config {
   port: number;
 
   /** Database connection details. */
-  db: MySQLConnectionConfig;
-
-  kafka: string;
+  db: MongoDBConnectionConfig;
 }

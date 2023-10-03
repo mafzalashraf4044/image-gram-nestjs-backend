@@ -1,18 +1,17 @@
 import { Module, Logger } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 
-import CommentEntity from './comment.entity';
+import { Comment, CommentSchema } from './comment.schema';
 import CommentController from './comment.controller';
 import CommentService from './comment.service';
-import CommentRepository from './comment.repository';
+import CommentModel from './comment.model';
 
 @Module({
   controllers: [CommentController],
-  providers: [
-    CommentService,
-    CommentRepository,
-    Logger,
+  providers: [CommentService, CommentModel, Logger],
+  imports: [
+    MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
   ],
-  imports: [],
-  exports: [],
+  exports: [MongooseModule],
 })
-export default class BulkEmailJobModule {}
+export default class CommentModule {}

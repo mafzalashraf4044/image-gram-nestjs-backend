@@ -1,19 +1,17 @@
 import { Module, Logger } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MongooseModule } from '@nestjs/mongoose';
 
-import PostEntity from './post.entity';
+import { Post, PostSchema } from './post.schema';
 import PostController from './post.controller';
 import PostService from './post.service';
-import PostRepository from './post.repository';
+import PostModel from './post.model';
 
 @Module({
   controllers: [PostController],
-  providers: [
-    PostService,
-    PostRepository,
-    Logger,
+  providers: [PostService, PostModel, Logger],
+  imports: [
+    MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
   ],
-  imports: [TypeOrmModule.forFeature([PostEntity])],
-  exports: [TypeOrmModule],
+  exports: [MongooseModule],
 })
-export default class BulkEmailJobModule {}
+export default class PostModule {}

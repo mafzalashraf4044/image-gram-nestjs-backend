@@ -1,19 +1,12 @@
-import {
-  Injectable,
-  Logger,
-} from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { plainToClass } from 'class-transformer';
+import { Injectable, Logger } from '@nestjs/common';
 
-import PostRepository from './post.repository';
+import PostModel from './post.model';
 
 @Injectable()
 export default class PostService {
   private readonly logger: Logger;
 
-  constructor(
-    private readonly postRepository: PostRepository,
-  ) {
+  constructor(private readonly postModel: PostModel) {
     this.logger = new Logger('post.service');
   }
 
@@ -25,9 +18,13 @@ export default class PostService {
     }
   }
 
-  async create(): Promise<boolean> {
+  async create(): Promise<any> {
     try {
-      return Promise.resolve(true);
+      const post = await this.postModel.createEntity({
+        title: 'My post',
+        content: 'Hello world',
+      });
+      return Promise.resolve(post);
     } catch (error) {
       this.logger.error('create', error);
     }

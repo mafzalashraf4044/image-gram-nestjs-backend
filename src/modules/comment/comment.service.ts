@@ -1,19 +1,12 @@
-import {
-  Injectable,
-  Logger,
-} from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { plainToClass } from 'class-transformer';
+import { Injectable, Logger } from '@nestjs/common';
 
-import CommentRepository from './comment.repository';
+import CommentModel from './comment.model';
 
 @Injectable()
 export default class CommentService {
   private readonly logger: Logger;
 
-  constructor(
-    private readonly commentRepository: CommentRepository,
-  ) {
+  constructor(private readonly commentModel: CommentModel) {
     this.logger = new Logger('comment.service');
   }
 

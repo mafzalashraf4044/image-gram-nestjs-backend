@@ -7,14 +7,12 @@ export default class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get()
-  getAll(
-  ): Promise<boolean> {
+  getAll(): Promise<boolean> {
     return this.postService.getAll();
   }
 
   @Post()
-  create(
-  ): Promise<boolean> {
+  create(): Promise<any> {
     return this.postService.create();
   }
 }
