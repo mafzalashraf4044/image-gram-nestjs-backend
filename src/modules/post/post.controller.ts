@@ -1,20 +1,55 @@
-import { Controller, Get, Post as HTTPPost, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post as HTTPPost,
+  Body,
+  Query,
+  Req,
+  UploadedFile,
+  UseInterceptors,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+import { RequestWithUser } from '@modules/user/interfaces';
 
 import PostService from './post.service';
 import { Post } from './post.schema';
-import { CreatePostDTO } from './dto';
+import {
+  CreatePostDTO,
+  PaginationRequestDTO,
+  PaginationTransformPipe,
+} from './dto';
+import { GetAllPostResponse } from './interfaces';
 
 @Controller('post')
 export default class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get()
-  getAll(): Promise<boolean> {
-    return this.postService.getAll();
+  getAll(
+    @Query(new PaginationTransformPipe()) pagination: PaginationRequestDTO,
+  ): Promise<GetAllPostResponse> {
+    return this.postService.getAll(pagination.limit, pagination.cursor);
   }
 
   @HTTPPost()
-  create(@Body() createPostDTO: CreatePostDTO): Promise<Post> {
-    return this.postService.create(createPostDTO);
+  @UseInterceptors(FileInterceptor('image'))
+  create(
+    @Body() createPostDTO: CreatePostDTO,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1000000 }),
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+        ],
+      }),
+    )
+    image: Express.Multer.File,
+    @Req() req: RequestWithUser,
+  ): Promise<Post> {
+    return this.postService.create(createPostDTO, image, req.user);
   }
 }

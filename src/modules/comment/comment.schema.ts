@@ -1,32 +1,43 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Document } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
+
+import { Post } from '@modules/post/post.schema';
+import { User } from '@modules/user/user.schema';
+import { getMongooseSchemaOptions } from '@common/utils';
 
 export type CommentDocument = HydratedDocument<Comment>;
 
-@Schema()
-export class Comment extends Document {
+@Schema(getMongooseSchemaOptions())
+export class Comment {
+  @Prop({ type: MongooseSchema.Types.ObjectId, auto: true })
+  _id: string;
+
   @Prop({ required: true })
   content: string;
 
-  @Prop({ default: () => new Date() })
-  createdAt: Date;
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Post',
+  }) // Embed PostSchema within Comment
+  post: Post;
 
-  @Prop({ default: () => new Date() })
-  updatedAt: Date;
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'User',
+  })
+  commenter: User;
+
+  @Prop({
+    defalut: false,
+  })
+  archived: boolean;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
 
-// Define a pre-save middleware to update the rank field
-CommentSchema.pre('save', function (next) {
-  this.updatedAt = new Date();
-
-  next();
-});
-
-// Define a method to remove __v and convert to plain object
+// Define a method to remove _id and convert to plain object
 CommentSchema.methods.toJSON = function () {
-  const postObject = this.toObject();
-  delete postObject.__v; // Remove the __v field
-  return postObject;
+  const commentObject = this.toObject();
+  delete commentObject._id; // Remove the _id field
+  return commentObject;
 };

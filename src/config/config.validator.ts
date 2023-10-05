@@ -28,4 +28,24 @@ export default class EnvironmentVariables
   @IsString()
   @IsNotEmpty()
   DATABASE_NAME: string;
+
+  @IsString()
+  @IsNotEmpty()
+  JWT_SECRET: string;
+
+  @IsString()
+  @IsNotEmpty()
+  JWT_EXPIRY: string;
+
+  @IsString()
+  @IsNotEmpty()
+  ENCRYPTION_KEY: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AWS_ACCESS_KEY_ID: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AWS_SECRET_ACCESS_KEY: string;
 }

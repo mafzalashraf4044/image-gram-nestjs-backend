@@ -4,8 +4,15 @@ import { validateSync } from 'class-validator';
 import {
   EnvironmentVariablesInterface,
   MongoDBConnectionConfig,
+  JWTConfig,
+  AWSConfig,
 } from '@common/interfaces';
-import { MISSING_MY_SQL_ENV_VARIABLES } from '@common/errors';
+import {
+  MISSING_MY_SQL_ENV_VARIABLES,
+  MISSING_JWT_ENV_VARIABLES,
+  MISSING_ENCRYPTION_KEY_ENV_VARIABLES,
+  MISSING_AWS_ENV_VARIABLES,
+} from '@common/errors';
 
 export const validateEnvVariables = <T extends EnvironmentVariablesInterface>(
   EnvironmentVariables: ClassConstructor<T>,
@@ -45,3 +52,36 @@ export const parseMongoDBConnectionConfigFromEnv =
       database: process.env['DATABASE_NAME'],
     };
   };
+
+export const parseJWTConfigFromEnv = (): JWTConfig => {
+  if (!process.env['JWT_SECRET'] || !process.env['JWT_EXPIRY']) {
+    throw new Error(MISSING_JWT_ENV_VARIABLES);
+  }
+
+  return {
+    secret: process.env['JWT_SECRET'],
+    expiry: process.env['JWT_EXPIRY'],
+  };
+};
+
+export const parseEncryptionKeyFromEnv = (): string => {
+  if (!process.env['ENCRYPTION_KEY']) {
+    throw new Error(MISSING_ENCRYPTION_KEY_ENV_VARIABLES);
+  }
+
+  return process.env['ENCRYPTION_KEY'];
+};
+
+export const parseAWSConfigFromEnv = (): AWSConfig => {
+  if (
+    !process.env['AWS_ACCESS_KEY_ID'] ||
+    !process.env['AWS_SECRET_ACCESS_KEY']
+  ) {
+    throw new Error(MISSING_AWS_ENV_VARIABLES);
+  }
+
+  return {
+    accessKeyId: process.env['AWS_ACCESS_KEY_ID'],
+    secretAccessKey: process.env['AWS_SECRET_ACCESS_KEY'],
+  };
+};

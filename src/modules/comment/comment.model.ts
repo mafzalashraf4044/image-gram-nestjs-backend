@@ -4,12 +4,13 @@ import { Model } from 'mongoose';
 
 import { BaseMongooseModel } from '@common/database';
 
-import { Comment } from './comment.schema';
+import { Comment, CommentDocument } from './comment.schema';
 
 @Injectable()
-export default class CommentModel extends BaseMongooseModel<Comment> {
+export default class CommentModel extends BaseMongooseModel<CommentDocument> {
   constructor(
-    @InjectModel(Comment.name) private readonly commentModel: Model<Comment>,
+    @InjectModel(Comment.name)
+    private readonly commentModel: Model<CommentDocument>,
   ) {
     super(commentModel);
   }

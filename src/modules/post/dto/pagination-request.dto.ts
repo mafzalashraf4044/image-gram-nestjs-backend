@@ -1,20 +1,26 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { plainToInstance, Type } from 'class-transformer';
-import { IsInt, IsOptional, Min, Max } from 'class-validator';
+import {
+  IsInt,
+  IsOptional,
+  IsNotEmpty,
+  IsString,
+  Min,
+  Max,
+} from 'class-validator';
 
 export class PaginationRequestDTO {
-  @Type(() => Number)
-  @IsInt()
-  @Min(0)
+  @Type(() => String)
   @IsOptional()
-  skip = 0;
+  @IsString()
+  cursor;
 
   @Type(() => Number)
   @IsInt()
   @Min(1)
   @Max(100)
   @IsOptional()
-  take = 10;
+  limit = 10;
 }
 
 @Injectable()

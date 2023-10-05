@@ -4,16 +4,31 @@ import { NotFoundException } from '@nestjs/common';
 export class BaseMongooseModel<T extends Document> {
   constructor(private readonly model: Model<T>) {}
 
+  async findEntity(query: any = {}, projections: string[] = []): Promise<T> {
+    const entity = (await this.model
+      .findOne(query)
+      .populate(projections)
+      .exec()) as T;
+
+    if (!entity) {
+      throw new NotFoundException('Model not found.');
+    }
+
+    return entity;
+  }
+
   async findEntities(
-    query: any,
-    skip: number,
-    limit: number,
+    query: any = {},
+    skip = 0,
+    limit = 10,
     projections: string[] = [],
+    sort: any = { createdAt: -1 },
   ): Promise<T[]> {
     const entities = await this.model
       .find(query)
       .skip(skip)
       .limit(limit)
+      .sort(sort)
       .populate(projections)
       .exec();
     if (!entities.length) {
@@ -38,5 +53,13 @@ export class BaseMongooseModel<T extends Document> {
   ): Promise<T | null> {
     await this.model.findByIdAndUpdate(id, update, { new: true });
     return this.findEntityById(id, projections);
+  }
+
+  async deleteOne(query: any): Promise<void> {
+    const result = await this.model.deleteOne(query).exec();
+
+    if (result.deletedCount === 0) {
+      throw new NotFoundException('No document found to delete.');
+    }
   }
 }
