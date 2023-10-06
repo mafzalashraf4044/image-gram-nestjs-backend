@@ -1,5 +1,6 @@
 # compiled output
 /node_modules
+/dist
 
 # Logs
 logs
@@ -19,6 +20,7 @@ lerna-debug.log*
 
 # IDEs and editors
 /.idea
+.vscode
 .project
 .classpath
 .c9/

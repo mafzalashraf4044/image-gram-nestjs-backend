@@ -2,10 +2,12 @@
 
 Imagegram is a backend application built with NestJS that allows users to upload images, create posts with captions, comment on posts, and manage comments. This project also includes Docker Compose configurations for setting up a development environment.
 
-## Try it out
+### Links
 
 - Deployed backend is avaiable at: http://52.90.184.247:3003
 - Swagger Documentation: http://52.90.184.247:3003/api
+- Explanation Document: https://docs.google.com/document/d/1Tn8DoSeAjCijWeyrcvrlBJetMCJKeRJzcwZtjnzdi6E/edit?usp=sharing
+- 
 
 ## Requirements
 
