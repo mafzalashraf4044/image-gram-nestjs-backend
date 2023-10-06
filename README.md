@@ -7,6 +7,7 @@ Imagegram is a backend application built with NestJS that allows users to upload
 - Deployed backend is avaiable at: http://52.90.184.247:3003
 - Swagger Documentation: http://52.90.184.247:3003/api
 - Explanation Document: https://docs.google.com/document/d/1Tn8DoSeAjCijWeyrcvrlBJetMCJKeRJzcwZtjnzdi6E/edit?usp=sharing
+- Demo Videos: https://www.youtube.com/watch?v=4KlEFihQJhY&list=PL3K0sg_g_SL4ygYQV-3Yafdy31ps4xp1Z
 
 ## Requirements
 
