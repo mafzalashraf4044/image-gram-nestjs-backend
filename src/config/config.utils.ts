@@ -1,18 +1,15 @@
 import { plainToInstance, ClassConstructor } from 'class-transformer';
 import { validateSync } from 'class-validator';
 
-import {
-  EnvironmentVariablesInterface,
-  MongoDBConnectionConfig,
-  JWTConfig,
-  AWSConfig,
-} from '@common/interfaces';
+import { MongoDBConnectionConfig, AWSConfig } from '@common/interfaces';
+
+import { EnvironmentVariablesInterface, JWTConfig } from './config.interface';
 import {
   MISSING_MY_SQL_ENV_VARIABLES,
   MISSING_JWT_ENV_VARIABLES,
   MISSING_ENCRYPTION_KEY_ENV_VARIABLES,
   MISSING_AWS_ENV_VARIABLES,
-} from '@common/errors';
+} from './config.errors';
 
 export const validateEnvVariables = <T extends EnvironmentVariablesInterface>(
   EnvironmentVariables: ClassConstructor<T>,

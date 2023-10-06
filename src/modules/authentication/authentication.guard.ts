@@ -29,28 +29,30 @@ export default class AuthenticationGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
+
     if (isPublic) {
-      // 💡 See this condition
       return true;
     }
 
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
+
     if (!token) {
       throw new UnauthorizedException();
     }
+
     try {
       const jwtSecret = this.configService.get('jwt.secret');
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtSecret,
       });
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
-      const user = await this.userService.getById(payload.sub);
+
+      const user = await this.userService.getById(payload.sub, true);
       request['user'] = user;
     } catch {
       throw new UnauthorizedException();
     }
+
     return true;
   }
 

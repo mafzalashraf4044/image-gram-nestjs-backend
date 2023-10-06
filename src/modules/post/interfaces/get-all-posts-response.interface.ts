@@ -1,6 +1,6 @@
-import { Post } from '../post.schema';
+import { PostDocument } from '../post.schema';
 
-export interface GetAllPostResponse {
+export default interface GetAllPostResponse {
   cursor: string;
-  data: Post[];
+  data: PostDocument[];
 }

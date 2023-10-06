@@ -14,6 +14,6 @@ import PostModel from './post.model';
   imports: [
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
   ],
-  exports: [MongooseModule, PostModel],
+  exports: [MongooseModule, PostService],
 })
 export default class PostModule {}

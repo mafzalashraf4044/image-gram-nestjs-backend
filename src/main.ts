@@ -1,8 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-import { HttpExceptionFilter } from '@common/filters';
+import { AllExceptionFilter } from '@common/filters';
 
 import { AppModule } from './app.module';
 
@@ -16,15 +17,36 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: false, // this should be true, but for some
+      whitelist: false,
       transform: true,
       transformOptions: { enableImplicitConversion: true },
     }),
   );
 
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new AllExceptionFilter());
 
   app.enableCors();
+
+  const config = new DocumentBuilder()
+    .setTitle('Image Gram API')
+    .setDescription('The Image Gram API Routes')
+    .setVersion('1.0')
+    .addTag('image-gram')
+    .addBearerAuth(
+      {
+        description: `Please enter JWT Token in following format: Bearer <JWT>`,
+        name: 'Authorization',
+        bearerFormat: 'Bearer',
+        scheme: 'Bearer',
+        type: 'http',
+        in: 'Header',
+      },
+      'jwt-token',
+    )
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(port);
 

@@ -31,6 +31,17 @@ export class Comment {
     defalut: false,
   })
   archived: boolean;
+
+  // Define a virtual getter for 'id'
+  get id(): string {
+    return this._id.toString();
+  }
+
+  @Prop({ default: () => new Date() })
+  createdAt: Date;
+
+  @Prop({ default: () => new Date() })
+  updatedAt: Date;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);

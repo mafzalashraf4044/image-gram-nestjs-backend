@@ -1,15 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  HttpStatus,
-  HttpCode,
-} from '@nestjs/common';
+import { Controller, Post, Body, HttpStatus, HttpCode } from '@nestjs/common';
+
+import { UserDocument } from '@modules/user/user.schema';
 
 import AuthenticationService from './authentication.service';
 import { Public } from './authentication.guard';
 import { LogInDTO, RegisterDTO } from './dto';
+import { LoginResponse } from './interfaces';
 
 @Controller('auth')
 export default class AuthenticationController {
@@ -18,14 +14,14 @@ export default class AuthenticationController {
   @Public()
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
-  async register(@Body() registerDTO: RegisterDTO) {
+  async register(@Body() registerDTO: RegisterDTO): Promise<UserDocument> {
     return this.authenticationService.register(registerDTO);
   }
 
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() loginDTO: LogInDTO) {
+  signIn(@Body() loginDTO: LogInDTO): Promise<LoginResponse> {
     return this.authenticationService.login(loginDTO);
   }
 }

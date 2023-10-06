@@ -1,3 +1,5 @@
+import { MongoDBConnectionConfig, AWSConfig } from '@common/interfaces';
+
 export interface EnvironmentVariablesInterface {
   PORT: number;
   DATABASE_HOST: string;
@@ -12,22 +14,9 @@ export interface EnvironmentVariablesInterface {
   AWS_SECRET_ACCESS_KEY: string;
 }
 
-export interface MongoDBConnectionConfig {
-  host: string;
-  port: number;
-  username: string;
-  password: string;
-  database: string;
-}
-
 export interface JWTConfig {
   secret: string;
   expiry: string;
-}
-
-export interface AWSConfig {
-  accessKeyId: string;
-  secretAccessKey: string;
 }
 
 export interface Config {

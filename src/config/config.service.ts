@@ -3,8 +3,8 @@ import {
   parseJWTConfigFromEnv,
   parseEncryptionKeyFromEnv,
   parseAWSConfigFromEnv,
-} from '@common/utils';
-import { Config } from '@common/interfaces';
+} from './config.utils';
+import { Config } from './config.interface';
 
 export default async (): Promise<Config> => {
   return {

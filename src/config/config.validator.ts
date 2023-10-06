@@ -1,6 +1,6 @@
 import { IsNumber, IsString, IsNotEmpty } from 'class-validator';
 
-import { EnvironmentVariablesInterface } from '@common/interfaces';
+import { EnvironmentVariablesInterface } from './config.interface';
 
 export default class EnvironmentVariables
   implements EnvironmentVariablesInterface

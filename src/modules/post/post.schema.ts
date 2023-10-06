@@ -41,10 +41,10 @@ export class Post {
   )
   image: Record<string, any>;
 
-  @Prop({
-    defalut: false,
-  })
-  archived: boolean;
+  // Define a virtual getter for 'id'
+  get id(): string {
+    return this._id.toString();
+  }
 
   @Prop({ default: () => new Date() })
   createdAt: Date;

@@ -12,11 +12,13 @@ import {
   FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
 
 import { RequestWithUser } from '@modules/user/interfaces';
+import { MAX_FILE_SIZE_IN_BYTES } from '@common/constants';
 
 import PostService from './post.service';
-import { Post } from './post.schema';
+import { PostDocument } from './post.schema';
 import {
   CreatePostDTO,
   PaginationRequestDTO,
@@ -24,6 +26,7 @@ import {
 } from './dto';
 import { GetAllPostResponse } from './interfaces';
 
+@ApiBearerAuth('jwt-token')
 @Controller('post')
 export default class PostController {
   constructor(private readonly postService: PostService) {}
@@ -37,19 +40,20 @@ export default class PostController {
 
   @HTTPPost()
   @UseInterceptors(FileInterceptor('image'))
+  @ApiConsumes('multipart/form-data')
   create(
     @Body() createPostDTO: CreatePostDTO,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 1000000 }),
+          new MaxFileSizeValidator({ maxSize: MAX_FILE_SIZE_IN_BYTES }),
           new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
         ],
       }),
     )
     image: Express.Multer.File,
     @Req() req: RequestWithUser,
-  ): Promise<Post> {
+  ): Promise<PostDocument> {
     return this.postService.create(createPostDTO, image, req.user);
   }
 }

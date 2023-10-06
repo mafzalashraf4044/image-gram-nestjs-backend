@@ -42,7 +42,7 @@ async function createComments(authors) {
 
         comments.push({
           content: `Comment Content ${i + 1}`,
-          author: new ObjectId(
+          commenter: new ObjectId(
             authors[Math.floor(Math.random() * authors.length)],
           ),
           post: new ObjectId(postId),

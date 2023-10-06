@@ -1,17 +1,11 @@
-import {
-  Injectable,
-  Logger,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 
-import { UNABLE_TO_CREATE_COMMENT } from '@common/errors';
-import PostModel from '@modules/post/post.model';
+import PostService from '@modules/post/post.service';
 import { UserDocument } from '@modules/user/user.schema';
 
-import { Comment } from './comment.schema';
+import { CommentDocument } from './comment.schema';
 import CommentModel from './comment.model';
-import { CreateCommentDTO } from './dto';
+import { NOT_AUTHORIZED_TO_DELETE_COMMENT } from './comment.errors';
 
 @Injectable()
 export default class CommentService {
@@ -19,65 +13,79 @@ export default class CommentService {
 
   constructor(
     private readonly commentModel: CommentModel,
-    private readonly postModel: PostModel,
+    private readonly postService: PostService,
   ) {
     this.logger = new Logger('comment.service');
   }
 
-  async getAll(): Promise<Comment[]> {
-    try {
-      const comments = await this.commentModel.findEntities({}, 0, 10, [
-        'post',
-      ]);
-      return comments;
-    } catch (error) {
-      this.logger.error('getAll', error);
-    }
-  }
-
+  /**
+   * Create a new comment.
+   *
+   * @param {string} postId - The ID of the post.
+   * @param {string} content - The content of the comment
+   * @param {UserDocument} commenter - The user creating the comment.
+   * @returns {Promise<CommentDocument>} A promise that resolves to the created comment.
+   */
   async create(
-    createCommentDTO: CreateCommentDTO,
+    postId: string,
+    content: string,
     commenter: UserDocument,
-  ): Promise<Comment> {
-    try {
-      const post = await this.postModel.findEntityById(createCommentDTO.post);
-      const comment = await this.commentModel.createEntity({
-        post,
-        commenter,
-        content: createCommentDTO.content,
-      });
+  ): Promise<CommentDocument> {
+    const post = await this.postService.getPostById(postId, true);
 
-      // await comment.populate({
-      //   path: 'post',
-      //   select: '-__v',
-      // });
+    const comment = await this.commentModel.createEntity({
+      post,
+      commenter,
+      content: content,
+    });
 
-      post.comments.push(comment);
-      await post.save();
+    post.comments.push(comment);
+    await post.save();
 
-      return comment;
-    } catch (error) {
-      this.logger.error('create', error.stack);
-      throw new InternalServerErrorException(UNABLE_TO_CREATE_COMMENT);
-    }
+    return comment;
   }
 
+  /**
+   * Delete a comment by its ID.
+   *
+   * @param {string} id - The ID of the comment to delete.
+   * @param {UserDocument} commenter - The user attempting to delete the comment.
+   * @returns {Promise<boolean>} A promise that resolves to `true` if the comment is deleted successfully.
+   * @throws {NotFoundException} If the comment is not found.
+   * @throws {UnauthorizedException} If the user is not authorized to delete the comment.
+   */
   async delete(id: string, commenter: UserDocument): Promise<boolean> {
-    const comment = await this.commentModel.findEntityById(id);
+    const comment = await this.commentModel.findEntityById(id, [], true);
 
     await comment.populate('post');
     await comment.populate('commenter');
 
-    console.log('comment', comment);
+    await this.markCommentAsArchived(comment, commenter);
 
-    if (comment.commenter._id.toString() !== commenter.id) {
-      throw new UnauthorizedException();
-    }
-
-    const comments = comment.post.comments.filter(o => o._id.toString() !== id);
-    await this.commentModel.updateEntity(id, { archived: true });
-    await this.postModel.updateEntity(comment.post._id, { comments });
+    const comments = comment.post.comments.filter(o => o.id !== id);
+    await this.postService.updatePost(comment.post.id, { comments });
 
     return true;
+  }
+
+  // Private methods
+
+  /**
+   * Update the archived field of comment to true
+   *
+   * @private
+   * @param {CommentDocument} comment - The comment to update.
+   * @param {UserDocument} commenter - The user attempting to delete the comment.
+   * @returns {Promise<Post>} A promise that resolves to the saved post.
+   */
+  private async markCommentAsArchived(
+    comment: CommentDocument,
+    commenter: UserDocument,
+  ): Promise<void> {
+    if (comment.commenter.id !== commenter.id) {
+      throw new UnauthorizedException(NOT_AUTHORIZED_TO_DELETE_COMMENT);
+    }
+
+    await this.commentModel.updateEntity(comment.id, { archived: true });
   }
 }

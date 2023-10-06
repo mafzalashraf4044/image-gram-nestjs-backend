@@ -2,10 +2,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule as NestConfigModule } from '@nestjs/config';
 
-import { validateEnvVariables } from '@common/utils';
-
 import configuration from './config.service';
 import EnvironmentVariables from './config.validator';
+import { validateEnvVariables } from './config.utils';
 
 @Module({
   imports: [
