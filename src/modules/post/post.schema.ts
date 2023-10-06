@@ -55,6 +55,8 @@ export class Post {
 
 export const PostSchema = SchemaFactory.createForClass(Post);
 
+PostSchema.index({ rank: -1, createdAt: -1 });
+
 // Define a pre-save middleware to update the rank field
 PostSchema.pre('save', function (next) {
   // Check if the comments array length has changed
