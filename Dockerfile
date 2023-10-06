@@ -27,6 +27,8 @@ WORKDIR /app
 
 # Copy the built application from the previous stage
 COPY --from=builder /app/dist ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.env ./.env
 
 # Define the command to start the production application
 CMD ["node", "main"]
