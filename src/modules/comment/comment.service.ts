@@ -1,11 +1,19 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 
 import PostService from '@modules/post/post.service';
 import { UserDocument } from '@modules/user/user.schema';
 
 import { CommentDocument } from './comment.schema';
 import CommentModel from './comment.model';
-import { NOT_AUTHORIZED_TO_DELETE_COMMENT } from './comment.errors';
+import {
+  NOT_AUTHORIZED_TO_DELETE_COMMENT,
+  ALREADY_DELETED,
+} from './comment.errors';
 
 @Injectable()
 export default class CommentService {
@@ -55,15 +63,22 @@ export default class CommentService {
    * @throws {UnauthorizedException} If the user is not authorized to delete the comment.
    */
   async delete(id: string, commenter: UserDocument): Promise<boolean> {
-    const comment = await this.commentModel.findEntityById(id, [], true);
+    const comment = await this.commentModel.findEntityById(id, [], null, true);
+
+    if (comment.archived) {
+      throw new BadRequestException(ALREADY_DELETED);
+    }
 
     await comment.populate('post');
     await comment.populate('commenter');
 
     await this.markCommentAsArchived(comment, commenter);
 
-    const comments = comment.post.comments.filter(o => o.id !== id);
-    await this.postService.updatePost(comment.post.id, { comments });
+    const comments = comment.post.comments.filter(o => o.toString() !== id);
+    await this.postService.updatePost(comment.post.id, {
+      comments,
+      rank: comments.length,
+    });
 
     return true;
   }

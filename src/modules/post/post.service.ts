@@ -38,7 +38,7 @@ export default class PostService {
     postId: string,
     throwError = false,
   ): Promise<PostDocument | null> {
-    return this.postModel.findEntityById(postId, [], throwError);
+    return this.postModel.findEntityById(postId, [], null, throwError);
   }
 
   /**
@@ -48,10 +48,7 @@ export default class PostService {
    * @param {Partial<PostDocument>} update - Fields to update in the post.
    * @returns {Promise<PostDocument>} A promise that resolves to the updated post.
    */
-  async updatePost(
-    postId: string,
-    update: Partial<PostDocument>,
-  ): Promise<PostDocument> {
+  async updatePost(postId: string, update: any): Promise<PostDocument> {
     return this.postModel.updateEntity(postId, update);
   }
 
@@ -103,7 +100,12 @@ export default class PostService {
   ): Promise<PostDocument> {
     const imageKey = await this.uploadImageToS3(image);
 
-    const post = await this.savePost(createPostDTO, author, imageKey);
+    const regexPattern = /\.(png|bmp|jpeg)/gi;
+    const post = await this.savePost(
+      createPostDTO,
+      author,
+      imageKey.replace(regexPattern, '.jpg'),
+    );
 
     return post;
   }

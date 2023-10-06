@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM node:19.7.0-alpine3.17 AS builder
+FROM node AS builder
 
 # Set the working directory in the container
 WORKDIR /app
@@ -20,7 +20,7 @@ COPY ./tsconfig.json ./tsconfig.json
 RUN npm run build
 
 # Stage 2: Create a lightweight production image
-FROM node:19.7.0-alpine3.17
+FROM node
 
 # Set the working directory in the container
 WORKDIR /app
